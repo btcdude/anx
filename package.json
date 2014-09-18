@@ -1,7 +1,7 @@
 {
   "name": "anx",
-  "version": "0.0.6",
-  "description": "anxpro.com API v2 client for node.js",
+  "version": "0.0.1",
+  "description": "anxpro.com API v3 client for node.js",
   "keywords": [
     "btc",
     "bitcoin",
@@ -14,13 +14,14 @@
   "contributors": [],
   "license": "MIT",
   "dependencies": {
-    "querystring": "0.2.0",
     "JSONStream": "0.6.4",
-    "request": "2.21.0"
+    "querystring": "0.2.0",
+    "request": "2.21.0",
+    "verror": "1.4.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/btcdude/anx"
+    "url": "https://github.com/naddison36/anx"
   },
   "main": "index.js",
   "engines": {
