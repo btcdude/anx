@@ -281,7 +281,7 @@ function ANXClient(key, secret, currency, server) {
     // the replaceOnlyIfActive flag allows you to specify behaviour if the existing order is already cancelled or filled when this new order is processed
     // i.e. if you want the new order to be successfully placed only if the existing order is still active, then specify replaceOnlyIfActive=true
     self.replaceLimitOrderFixedTradedAmount = function (buyTradedCcy, tradedCcy, settlementCcy, tradedCcyAmount, limitPrice, existingOrderId, replaceOnlyIfActive, callback) {
-        makeRequest("order/new", {order:{orderType:'LIMIT',replaceExistingOrderUuid: existingOrderId, replaceOnlyIfActive: replaceOnlyIfActive, buyTradedCurrency: buyTradedCcy, tradedCurrency: tradedCcy, settlementCurrency: settlementCcy, tradedCurrencyAmount: tradedCcyAmount, limitPriceInSettlementCurrency: limitPric}}, callback, 3);
+        makeRequest("order/new", {order:{orderType:'LIMIT',replaceExistingOrderUuid: existingOrderId, replaceOnlyIfActive: replaceOnlyIfActive, buyTradedCurrency: buyTradedCcy, tradedCurrency: tradedCcy, settlementCurrency: settlementCcy, tradedCurrencyAmount: tradedCcyAmount, limitPriceInSettlementCurrency: limitPrice}}, callback, 3);
     };
 
     // allows you to fix the amount of settlement (i.e. you could specify you wish to buy exactly 1000USD worth of BTC with this method)
