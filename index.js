@@ -1,6 +1,7 @@
 var querystring = require("querystring"),
     crypto = require("crypto"),
     request = require("request"),
+    VError = require("verror"),
     JSONStream = require("JSONStream");
 
 function ANXClient(key, secret, currency, server) {
@@ -16,14 +17,16 @@ function ANXClient(key, secret, currency, server) {
 
     var SATOSHI_FACTOR = Math.pow(10, 8);
 
-    function makePublicRequest(path, args, callback, version) {
+    function makePublicRequest(path, args, callback, version)
+    {
         version = typeof version !== 'undefined' ? version : '2';
         var params = querystring.stringify(args);
         if (params) path = path + "?" + params;
         return executeRequest(basicOptions(version, path), callback);
     }
 
-    function makeRequest(path, args, callback, version) {
+    function makeRequest(path, args, callback, version)
+    {
         version = typeof version !== 'undefined' ? version : '2';
         if (!self.key || !self.secret) {
             throw new Error("Must provide key and secret to make this API request.");
@@ -69,14 +72,28 @@ function ANXClient(key, secret, currency, server) {
         return executeRequest(options, callback);
     }
 
-    function executeRequest(options, callback) {
-        if (typeof callback == "function") {
-            request(options, function (err, res, body) {
+    function executeRequest(options, callback)
+    {
+        var functionName = 'anx.executeRequest()';
+
+        if (typeof callback == "function")
+        {
+            request(options, function (err, res, body)
+            {
                 var json;
 
-                if (err || !res || res.statusCode != 200) {
-                    var statusCode = res ? res.statusCode : null;
-                    return callback({error: (err || new Error("Request failed")), statusCode: statusCode});
+                if (err) {
+                    var error = new VError(err, "%s failed for uri %s and tonce %s", functionName, options.uri, lastTonce);
+                    return callback(error);
+                }
+                else if (res && res.statusCode != 200) {
+                    var error = new VError(err, "%s failed for uri %s and tonce %s with status code %s", functionName, options.uri, lastTonce, res.statusCode);
+                    error.statusCode = res.statusCode;
+                    return callback(error);
+                }
+                else if (!res) {
+                    var error = new VError("%s failed with no response from http request to uri %s with tonce %s. ", functionName, options.uri, lastTonce);
+                    return callback(error);
                 }
 
                 // This try-catch handles cases where Mt.Gox returns 200 but responds with HTML,
@@ -86,9 +103,9 @@ function ANXClient(key, secret, currency, server) {
                     json = JSON.parse(body);
                 } catch (err) {
                     if (body.indexOf("<") != -1) {
-                        return callback({error: new Error("ANX responded with html:\n" + body)});
+                        return callback(new VError(err, "ANX responded with html:\n" + body));
                     } else {
-                        return callback({error: new Error("JSON parse error: " + err)});
+                        return callback(new VError(err, "JSON parse error" + err));
                     }
                 }
 
@@ -281,7 +298,7 @@ function ANXClient(key, secret, currency, server) {
     // the replaceOnlyIfActive flag allows you to specify behaviour if the existing order is already cancelled or filled when this new order is processed
     // i.e. if you want the new order to be successfully placed only if the existing order is still active, then specify replaceOnlyIfActive=true
     self.replaceLimitOrderFixedTradedAmount = function (buyTradedCcy, tradedCcy, settlementCcy, tradedCcyAmount, limitPrice, existingOrderId, replaceOnlyIfActive, callback) {
-        makeRequest("order/new", {order:{orderType:'LIMIT',replaceExistingOrderUuid: existingOrderId, replaceOnlyIfActive: replaceOnlyIfActive, buyTradedCurrency: buyTradedCcy, tradedCurrency: tradedCcy, settlementCurrency: settlementCcy, tradedCurrencyAmount: tradedCcyAmount, limitPriceInSettlementCurrency: limitPric}}, callback, 3);
+        makeRequest("order/new", {order:{orderType:'LIMIT',replaceExistingOrderUuid: existingOrderId, replaceOnlyIfActive: replaceOnlyIfActive, buyTradedCurrency: buyTradedCcy, tradedCurrency: tradedCcy, settlementCurrency: settlementCcy, tradedCurrencyAmount: tradedCcyAmount, limitPriceInSettlementCurrency: limitPrice}}, callback, 3);
     };
 
     // allows you to fix the amount of settlement (i.e. you could specify you wish to buy exactly 1000USD worth of BTC with this method)
