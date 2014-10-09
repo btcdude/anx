@@ -19,14 +19,28 @@ function ANXClient(key, secret, currency, server) {
 
     function makePublicRequest(path, args, callback, version)
     {
+        var functionName = 'anx.makePublicRequest()';
+
         version = typeof version !== 'undefined' ? version : '2';
+
         var params = querystring.stringify(args);
         if (params) path = path + "?" + params;
-        return executeRequest(basicOptions(version, path), callback);
+
+        return executeRequest(basicOptions(version, path), function(err, json)
+        {
+            if (err)
+            {
+                var error = new VError(err, "%s failed for path: %s", functionName, path);
+                return callback(error);
+            }
+            callback(null, json);
+        });
     }
 
     function makeRequest(path, args, callback, version)
     {
+        var functionName = 'anx.makeRequest()';
+
         version = typeof version !== 'undefined' ? version : '2';
         if (!self.key || !self.secret) {
             throw new Error("Must provide key and secret to make this API request.");
@@ -69,7 +83,15 @@ function ANXClient(key, secret, currency, server) {
         options.headers["Rest-Sign"] = hmac.digest("base64");
         options.headers["Content-Length"] = postData.length;
 
-        return executeRequest(options, callback);
+        return executeRequest(options, function(err, json)
+        {
+            if (err)
+            {
+                var error = new VError(err, "%s request failed for message: %s", functionName, message);
+                return callback(error);
+            }
+            callback(null, json);
+        });
     }
 
     function executeRequest(options, callback)
