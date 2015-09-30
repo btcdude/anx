@@ -109,7 +109,7 @@ function ANXClient(key, secret, currency, server) {
                     return callback(error);
                 }
                 else if (res && res.statusCode != 200) {
-                    var error = new VError(err, "%s failed for uri %s and tonce %s with status code %s", functionName, options.uri, lastTonce, res.statusCode);
+                    var error = new VError(err, "%s failed for uri %s and tonce %s with HTTP status code %s", functionName, options.uri, lastTonce, res.statusCode);
                     error.statusCode = res.statusCode;
                     return callback(error);
                 }
@@ -207,7 +207,7 @@ function ANXClient(key, secret, currency, server) {
     self.fetchTrades = function (since, callback) {
         var args = {};
         if (typeof since != undefined) args.since = since;
-        return makePublicRequest(self._currency + "/money/trades/fetch", args, callback);
+        return makePublicRequest(self._currency + "/money/trade/fetch", args, callback);
     };
 
     self.fetchDepth = function (callback) {
