@@ -1,6 +1,6 @@
 {
   "name": "anx",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "anxpro.com API v3 client for node.js",
   "keywords": [
     "btc",
@@ -16,8 +16,8 @@
   "dependencies": {
     "JSONStream": "0.6.4",
     "querystring": "0.2.0",
-    "request": "2.21.0",
-    "verror": "1.4.0"
+    "request": "2.64.0",
+    "verror": "1.6.0"
   },
   "devDependencies": {
       "bignumber.js": "~1.4.1",
