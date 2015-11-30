@@ -281,8 +281,9 @@ function ANXClient(key, secret, currency, server) {
     self.newAccountAddress = function (ccy, subAccount, callback) {
         makeRequest("receive/create", {ccy: ccy, subAccount: subAccount}, callback, 3);
     };
-    self.tradeHistory = function (max, offset, callback) {
-        makeRequest("trade/list", {max: max, offset: offset}, callback, 3);
+
+    self.tradeHistory = function (from, to, callback) {
+        makeRequest("trade/list", {from: from, to: to}, callback, 3);
     };
 
     // buyTradedCcy is boolean and represents buy on sell (i.e. assuming tradedCcy is BTC then to buy BTC use buyTradedCcy = true)
